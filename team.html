@@ -10,6 +10,19 @@
 <meta property="og:description" content="Une date, une team, et une petite séance jusqu'au départ.">
 <meta property="og:image" content="https://nicodeprem.github.io/lineup-site/apercu.png">
 <meta property="og:type" content="website">
+
+<!-- Posable sur l'écran d'accueil. Ce n'est pas une coquetterie : sur iPhone,
+     Safari efface les données des sites qu'on n'ouvre pas pendant une
+     semaine, et les pages ajoutées à l'écran d'accueil en sont exemptées.
+     Sur un trip d'un mois, ça évite de perdre son identité — et donc de
+     devoir rejoindre la team une deuxième fois, en consommant une place. -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#FFF6EC">
+<link rel="apple-touch-icon" href="icone-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Line-up">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="icon" href="icone-192.png">
 <style>
 :root {
     --paper: #FFF6EC;
@@ -223,6 +236,29 @@ input[type=text]:focus { outline: 2px solid var(--accent); outline-offset: -1px;
 .centre { text-align: center; }
 .grand { font-size: 1.15rem; font-weight: 700; margin: 0; }
 .bloc .grand + p { margin: 6px 0 0; }
+
+.rappel {
+    margin-top: 26px;
+    padding: 14px 16px;
+    border: 1px dashed var(--line);
+    border-radius: 16px;
+    color: var(--ink-soft);
+    font-size: 0.88rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.rappel button {
+    flex: none;
+    background: none;
+    border: 0;
+    padding: 4px;
+    color: var(--ink-soft);
+    font: inherit;
+    font-size: 1.1rem;
+    cursor: pointer;
+    line-height: 1;
+}
 
 .pied {
     margin-top: 30px;
@@ -520,11 +556,19 @@ function ecranTeam() {
 
         ${blocTeam()}
 
+        ${rappelEcranAccueil()}
+
         ${pied(`Séance guidée et rappels : <a class="app" href="${APP_STORE}">dans l'app</a>.<br>
                 <a href="index.html">Line-up</a> · <a href="confidentialite.html">Confidentialité</a>`)}`;
 
     const bouton = document.getElementById("cocher");
     if (bouton) bouton.addEventListener("click", () => cocher(bouton));
+
+    const non = document.getElementById("rappel-non");
+    if (non) non.addEventListener("click", () => {
+        memoire.ecrire("lineup.rappel", "non");
+        document.getElementById("rappel").remove();
+    });
 }
 
 /// Cocher, ou décocher si on s'est trompé. On repart d'une lecture complète :
@@ -557,15 +601,66 @@ function rendre() {
 
 // --- Départ ----------------------------------------------------------------
 
-(async function () {
+const VALIDE = /^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}$/;
+
+/// Ce qu'on garde dans le navigateur, et pourquoi c'est peu : les données
+/// vivent sur le serveur. Ici, seulement de quoi retrouver sa team au
+/// prochain passage.
+const memoire = {
+    lire(cle) { try { return localStorage.getItem(cle); } catch (e) { return null; } },
+    ecrire(cle, valeur) { try { localStorage.setItem(cle, valeur); } catch (e) {} }
+};
+
+/// Demande au navigateur de ne pas effacer ces données pour faire de la
+/// place. Il répond ce qu'il veut — c'est une demande, pas un ordre.
+async function garderLesDonnees() {
+    try {
+        if (navigator.storage && navigator.storage.persist) await navigator.storage.persist();
+    } catch (e) {}
+}
+
+/// Posée sur l'écran d'accueil, la page se lance sans le `?c=CODE` du lien
+/// d'invitation. Sans ce repli, l'icône tomberait sur « code manquant ».
+function codeDeDepart() {
     const params = new URLSearchParams(location.search);
-    code = (params.get("c") || "").toUpperCase();
-    if (!/^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}$/.test(code)) return ecranCodeManquant();
+    const recu = (params.get("c") || "").toUpperCase();
+    if (VALIDE.test(recu)) {
+        memoire.ecrire("lineup.code", recu);
+        return recu;
+    }
+    const retenu = (memoire.lire("lineup.code") || "").toUpperCase();
+    return VALIDE.test(retenu) ? retenu : "";
+}
+
+/// L'invite à poser la page sur l'écran d'accueil. Discrète, une seule fois,
+/// et jamais pour qui l'a déjà fait.
+function rappelEcranAccueil() {
+    const debout = window.matchMedia("(display-mode: standalone)").matches
+        || window.navigator.standalone === true;
+    if (debout || memoire.lire("lineup.rappel") === "non") return "";
+
+    const ua = navigator.userAgent || "";
+    if (!/iPhone|iPad|iPod|Android/.test(ua)) return "";
+
+    const geste = /iPhone|iPad|iPod/.test(ua)
+        ? "Partager, puis « Sur l'écran d'accueil »"
+        : "le menu du navigateur, puis « Ajouter à l'écran d'accueil »";
+
+    return `<div class="rappel" id="rappel">
+        <span>Pour revenir sans rechercher le lien : ${geste}.</span>
+        <button type="button" id="rappel-non" aria-label="Ne plus afficher">&times;</button>
+    </div>`;
+}
+
+(async function () {
+    code = codeDeDepart();
+    if (!code) return ecranCodeManquant();
 
     try {
         await connexion();
         await charger();
         rendre();
+        garderLesDonnees();
     } catch (e) {
         app.innerHTML = `<p class="erreur centre">Connexion impossible pour l'instant.
             Réessaie dans un moment.</p>`;

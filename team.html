@@ -11,17 +11,18 @@
 <meta property="og:image" content="https://nicodeprem.github.io/lineup-site/apercu.png">
 <meta property="og:type" content="website">
 
-<!-- Posable sur l'écran d'accueil. Ce n'est pas une coquetterie : sur iPhone,
-     Safari efface les données des sites qu'on n'ouvre pas pendant une
-     semaine, et les pages ajoutées à l'écran d'accueil en sont exemptées.
-     Sur un trip d'un mois, ça évite de perdre son identité — et donc de
-     devoir rejoindre la team une deuxième fois, en consommant une place. -->
+<!-- Posable sur l'écran d'accueil, où la page s'ouvre en plein écran et
+     retrouve sa team. C'est fait pour Android, à qui cette page s'adresse.
+
+     `apple-mobile-web-app-capable` est volontairement absent. Sur iPhone, il
+     ferait s'ouvrir la page dans un rangement séparé de Safari : l'identité
+     anonyme et le code de la team n'y seraient pas, l'arrivant se croirait
+     inconnu et rejoindrait une deuxième fois — en consommant une place de la
+     team. Sans lui, l'icône rouvre simplement Safari, qui se souvient. Un
+     iPhone n'a de toute façon pas besoin de cette page : il a l'app. -->
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#FFF6EC">
 <link rel="apple-touch-icon" href="icone-192.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Line-up">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="icon" href="icone-192.png">
 <style>
 :root {
@@ -406,9 +407,16 @@ function ecranCodeManquant() {
 
 /// Pas encore membre : le prénom et la couleur, rien d'autre.
 function ecranArrivee(erreur) {
+    // Avant d'être dans la team, on n'en voit aucun membre : c'est la RLS qui
+    // le veut, et c'est bien. Impossible, donc, de savoir quelles couleurs
+    // sont déjà prises — proposer systématiquement la première de la palette
+    // ferait arriver tout le monde en orange. On en tire une au hasard, et
+    // celui qui arrive la change s'il veut.
     const prises = new Set(membres.map((m) => m.color.toUpperCase()));
     const libres = COULEURS.filter((c) => !prises.has(c));
-    const choisie = libres[0] || COULEURS[0];
+    const choisie = libres.length
+        ? libres[Math.floor(Math.random() * libres.length)]
+        : COULEURS[0];
 
     app.innerHTML = `
         <h1>On t'attend dans la team</h1>
@@ -639,15 +647,14 @@ function rappelEcranAccueil() {
         || window.navigator.standalone === true;
     if (debout || memoire.lire("lineup.rappel") === "non") return "";
 
+    // Android seulement : voir le commentaire de l'en-tête. Sur iPhone, poser
+    // la page sur l'écran d'accueil ferait plus de mal que de bien.
     const ua = navigator.userAgent || "";
-    if (!/iPhone|iPad|iPod|Android/.test(ua)) return "";
-
-    const geste = /iPhone|iPad|iPod/.test(ua)
-        ? "Partager, puis « Sur l'écran d'accueil »"
-        : "le menu du navigateur, puis « Ajouter à l'écran d'accueil »";
+    if (!/Android/.test(ua)) return "";
 
     return `<div class="rappel" id="rappel">
-        <span>Pour revenir sans rechercher le lien : ${geste}.</span>
+        <span>Pour revenir sans rechercher le lien : le menu du navigateur,
+        puis « Ajouter à l'écran d'accueil ».</span>
         <button type="button" id="rappel-non" aria-label="Ne plus afficher">&times;</button>
     </div>`;
 }

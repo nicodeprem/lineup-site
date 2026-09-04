@@ -20,8 +20,9 @@
     --card: #FFFFFF;
     --ink: #171216;
     --ink-soft: #7A6E72;
-    --line: #E6DACE;
+    --line: #EFE4D8;
     --accent: #FF5A1F;
+    --ombre: 0 1px 2px rgba(23, 18, 22, 0.04), 0 8px 24px rgba(23, 18, 22, 0.06);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -30,8 +31,9 @@
         --card: #1E1B22;
         --ink: #FDF6EE;
         --ink-soft: #9C9199;
-        --line: #322C36;
+        --line: #2C2731;
         --accent: #FF7A45;
+        --ombre: none;
     }
 }
 
@@ -39,112 +41,121 @@
 
 body {
     margin: 0;
-    padding: 32px 20px 80px;
+    padding: 40px 20px 48px;
     background: var(--paper);
     color: var(--ink);
-    font: 17px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    /* La police arrondie du système sur iPhone : la même que l'app. */
+    font: 16px/1.5 ui-rounded, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-align: center;
 }
 
-main { max-width: 40rem; margin: 0 auto; }
+main { max-width: 26rem; margin: 0 auto; }
 
-.mark { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
-.mark img { width: 62px; height: 62px; border-radius: 14px; }
+.logo { width: 76px; height: 76px; border-radius: 18px; display: block; margin: 0 auto; }
 
-h1 { font-size: 2.1rem; font-weight: 800; letter-spacing: -0.02em; margin: 0; }
-
-.tagline {
-    color: var(--accent);
-    font-weight: 700;
-    font-size: 0.82rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin: 0 0 28px;
+h1 {
+    font-size: 1.9rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin: 22px 0 0;
 }
 
-h2 { font-size: 1.15rem; font-weight: 700; margin: 36px 0 10px; }
-.soft { color: var(--ink-soft); font-size: 0.95rem; }
-a { color: var(--accent); }
+.sous { color: var(--ink-soft); margin: 10px 0 0; }
 
-.card {
+/* --- Le code : lisible, copiable, mais pas le sujet ---------------------- */
+
+.code {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin: 26px 0 0;
+    padding: 12px 18px;
     background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 18px;
-    padding: 20px 22px;
-    margin: 22px 0;
+    border-radius: 14px;
+    box-shadow: var(--ombre);
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    cursor: pointer;
+    border: 0;
+    color: inherit;
+    font-family: inherit;
+}
+/* `display` posé par une classe l'emporte sur l'attribut `hidden` du
+   navigateur : sans cette ligne, le bloc du code s'affichait vide quand le
+   lien n'en portait pas. */
+.code[hidden] { display: none; }
+
+.code small {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--ink-soft);
 }
 
-.card h2 { margin-top: 0; }
-ul { padding-left: 1.2em; }
+/* --- L'action : une seule, celle qui correspond au téléphone ------------- */
 
-footer {
-    margin-top: 52px;
-    padding-top: 20px;
+.action {
+    display: block;
+    margin: 30px 0 0;
+    padding: 17px 20px;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #fff;
+    background: var(--accent);
+    border-radius: 16px;
+    text-decoration: none;
+    transition: transform 0.12s ease;
+}
+.action:active { transform: scale(0.985); }
+
+.autre {
+    display: inline-block;
+    margin-top: 18px;
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+}
+.autre a { color: var(--ink-soft); }
+
+.quoi {
+    margin: 38px 0 0;
+    padding-top: 26px;
     border-top: 1px solid var(--line);
     color: var(--ink-soft);
-    font-size: 0.9rem;
+    font-size: 0.95rem;
 }
-.code {
-    font-size: 2.6rem;
-    font-weight: 800;
-    letter-spacing: 0.28em;
-    text-align: center;
-    margin: 6px 0 2px;
-}
-.bouton {
-    display: block;
-    background: var(--accent);
-    color: #fff;
-    text-decoration: none;
-    text-align: center;
-    font-weight: 700;
-    padding: 16px;
-    border-radius: 16px;
-    margin: 18px 0 10px;
-}
-.centre { text-align: center; }
+
+footer { margin-top: 26px; color: var(--ink-soft); font-size: 0.85rem; }
+footer a { color: var(--ink-soft); }
 </style>
 </head>
 <body>
 <main>
 
-<div class="mark">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="Line-up">
+<svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="Line-up">
   <rect width="1024" height="1024" fill="#FF5A1F"/>
   <circle cx="512" cy="330" r="142" fill="#FFF6EC"/>
   <polyline points="268.0,596.0 278.2,600.1 288.3,604.0 298.5,607.7 308.7,610.8 318.8,613.5 329.0,615.4 339.2,616.6 349.3,617.0 359.5,616.6 369.7,615.4 379.8,613.5 390.0,610.8 400.2,607.7 410.3,604.0 420.5,600.1 430.7,596.0 440.8,591.9 451.0,588.0 461.2,584.3 471.3,581.2 481.5,578.5 491.7,576.6 501.8,575.4 512.0,575.0 522.2,575.4 532.3,576.6 542.5,578.5 552.7,581.2 562.8,584.3 573.0,588.0 583.2,591.9 593.3,596.0 603.5,600.1 613.7,604.0 623.8,607.7 634.0,610.8 644.2,613.5 654.3,615.4 664.5,616.6 674.7,617.0 684.8,616.6 695.0,615.4 705.2,613.5 715.3,610.8 725.5,607.7 735.7,604.0 745.8,600.1 756.0,596.0" fill="none" stroke="#FFF6EC" stroke-width="54" stroke-linecap="round" stroke-linejoin="round"/>
   <polyline points="148.0,712.0 163.2,716.9 178.3,721.6 193.5,725.9 208.7,729.7 223.8,732.8 239.0,735.1 254.2,736.5 269.3,737.0 284.5,736.5 299.7,735.1 314.8,732.8 330.0,729.7 345.2,725.9 360.3,721.6 375.5,716.9 390.7,712.0 405.8,707.1 421.0,702.4 436.2,698.1 451.3,694.3 466.5,691.2 481.7,688.9 496.8,687.5 512.0,687.0 527.2,687.5 542.3,688.9 557.5,691.2 572.7,694.3 587.8,698.1 603.0,702.4 618.2,707.1 633.3,712.0 648.5,716.9 663.7,721.6 678.8,725.9 694.0,729.7 709.2,732.8 724.3,735.1 739.5,736.5 754.7,737.0 769.8,736.5 785.0,735.1 800.2,732.8 815.3,729.7 830.5,725.9 845.7,721.6 860.8,716.9 876.0,712.0" fill="none" stroke="#FFF6EC" stroke-width="62" stroke-linecap="round" stroke-linejoin="round"/>
   <polyline points="240.0,828.0 251.3,832.1 262.7,836.0 274.0,839.7 285.3,842.8 296.7,845.5 308.0,847.4 319.3,848.6 330.7,849.0 342.0,848.6 353.3,847.4 364.7,845.5 376.0,842.8 387.3,839.7 398.7,836.0 410.0,832.1 421.3,828.0 432.7,823.9 444.0,820.0 455.3,816.3 466.7,813.2 478.0,810.5 489.3,808.6 500.7,807.4 512.0,807.0 523.3,807.4 534.7,808.6 546.0,810.5 557.3,813.2 568.7,816.3 580.0,820.0 591.3,823.9 602.7,828.0 614.0,832.1 625.3,836.0 636.7,839.7 648.0,842.8 659.3,845.5 670.7,847.4 682.0,848.6 693.3,849.0 704.7,848.6 716.0,847.4 727.3,845.5 738.7,842.8 750.0,839.7 761.3,836.0 772.7,832.1 784.0,828.0" fill="none" stroke="#FFF6EC" stroke-width="54" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
-    <h1>Line-up</h1>
-</div>
-<p class="tagline">On t'attend dans la team</p>
 
-<div class="card">
-    <p class="centre soft" style="margin-top:0">Le code de la team</p>
-    <p class="code" id="code">······</p>
+<h1>On t'attend dans la team</h1>
+<p class="sous" id="sous">Une date, une team, et une petite séance jusqu'au départ.</p>
 
-    <a class="bouton" id="ouvrir" href="#">Ouvrir dans Line-up</a>
-    <a class="bouton" id="installer"
-       href="https://apps.apple.com/app/id6803060278"
-       style="background:var(--card);color:var(--accent);border:1px solid var(--line)">
-       Je n'ai pas encore l'app
-    </a>
-    <p class="soft centre" style="margin-bottom:0">
-        Installe Line-up, puis entre ce code à l'ouverture.
-    </p>
+<button class="code" id="code" type="button" hidden>
+    <span id="code-valeur">······</span><small id="code-etat">copier</small>
+</button>
 
-    <!-- Sans ça, un pote sous Android est simplement dehors — et comme
-         l'intérêt de Line-up c'est la bande, c'est le groupe entier qui
-         décroche. La page team.html lui donne le compte à rebours, la séance
-         du jour et sa case à cocher, sans rien installer. -->
-    <p class="soft centre" style="margin:22px 0 0; border-top:1px solid var(--line); padding-top:18px">
-        Pas d'iPhone ? <a id="web" href="#"><strong>Suis la team depuis cette page</strong></a>
-    </p>
-</div>
+<!-- L'action principale et l'alternative sont écrites par le script : elles
+     dépendent du téléphone. Poser les trois choix côte à côte obligeait
+     l'arrivant à se reconnaître dans l'un d'eux avant de pouvoir agir. -->
+<div id="choix"></div>
 
-<h2>C'est quoi ?</h2>
-<p>Une date, une team, et une petite séance jusqu'au départ. Chacun coche la
-sienne, tout le monde voit qui suit. Rien d'autre.</p>
+<p class="quoi">Chacun coche sa séance, tout le monde voit qui suit. Rien d'autre.</p>
 
 <footer>
     <a href="index.html">En savoir plus</a> ·
@@ -157,17 +168,52 @@ sienne, tout le monde voit qui suit. Rien d'autre.</p>
 // Le code arrive de deux façons : ?c=K7RXP4, ou une adresse de la forme
 // .../j/K7RXP4 relayée par la page 404 de GitHub Pages.
 (function () {
+    var APP_STORE = "https://apps.apple.com/app/id6803060278";
+
     var params = new URLSearchParams(location.search);
     var code = (params.get("c") || "").toUpperCase();
+    var choix = document.getElementById("choix");
+
     if (!/^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}$/.test(code)) {
-        document.getElementById("code").textContent = "code manquant";
-        document.getElementById("ouvrir").style.display = "none";
-        document.getElementById("web").parentElement.style.display = "none";
+        document.getElementById("sous").textContent =
+            "Ce lien n'a pas de code de team. Demande à ton pote de te renvoyer son invitation.";
         return;
     }
-    document.getElementById("code").textContent = code;
-    document.getElementById("ouvrir").href = "lineup://join/" + code;
-    document.getElementById("web").href = "team.html?c=" + code;
+
+    // Le code, montré et copiable — il sert à qui tape à la main, ou à qui
+    // ouvre le lien sur un ordinateur et continue sur son téléphone.
+    var bouton = document.getElementById("code");
+    var etat = document.getElementById("code-etat");
+    document.getElementById("code-valeur").textContent = code;
+    bouton.hidden = false;
+    bouton.addEventListener("click", function () {
+        navigator.clipboard && navigator.clipboard.writeText(code).then(function () {
+            etat.textContent = "copié";
+            setTimeout(function () { etat.textContent = "copier"; }, 1800);
+        });
+    });
+
+    // Un seul bouton, celui qui a une chance de marcher ici. L'App Store sur
+    // un Android, ou « ouvrir dans l'app » sur un ordinateur, ne sont pas des
+    // choix : ce sont des impasses présentées comme des options.
+    var ua = navigator.userAgent || "";
+    var iOS = /iPhone|iPad|iPod/.test(ua)
+        || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+    var web = "team.html?c=" + code;
+
+    if (iOS) {
+        choix.innerHTML =
+            '<a class="action" href="lineup://join/' + code + '">Ouvrir dans Line-up</a>' +
+            '<p class="autre"><a href="' + APP_STORE + '">Installer l\'app</a>' +
+            ' &middot; <a id="web" href="' + web + '">continuer sans</a></p>';
+    } else {
+        // Android, ordinateur : l'app n'existe pas ici, la page web est la
+        // seule vraie porte d'entrée. On ne la présente donc pas comme un
+        // repli, mais comme le chemin normal.
+        choix.innerHTML =
+            '<a class="action" id="web" href="' + web + '">Rejoindre la team</a>' +
+            '<span class="autre">Line-up est une app iPhone — ici, tu suis la team depuis ton navigateur.</span>';
+    }
 })();
 </script>
 </body>

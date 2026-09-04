@@ -132,6 +132,14 @@ footer {
     <p class="soft centre" style="margin-bottom:0">
         Installe Line-up, puis entre ce code à l'ouverture.
     </p>
+
+    <!-- Sans ça, un pote sous Android est simplement dehors — et comme
+         l'intérêt de Line-up c'est la bande, c'est le groupe entier qui
+         décroche. La page team.html lui donne le compte à rebours, la séance
+         du jour et sa case à cocher, sans rien installer. -->
+    <p class="soft centre" style="margin:22px 0 0; border-top:1px solid var(--line); padding-top:18px">
+        Pas d'iPhone ? <a id="web" href="#"><strong>Suis la team depuis cette page</strong></a>
+    </p>
 </div>
 
 <h2>C'est quoi ?</h2>
@@ -154,10 +162,12 @@ sienne, tout le monde voit qui suit. Rien d'autre.</p>
     if (!/^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}$/.test(code)) {
         document.getElementById("code").textContent = "code manquant";
         document.getElementById("ouvrir").style.display = "none";
+        document.getElementById("web").parentElement.style.display = "none";
         return;
     }
     document.getElementById("code").textContent = code;
     document.getElementById("ouvrir").href = "lineup://join/" + code;
+    document.getElementById("web").href = "team.html?c=" + code;
 })();
 </script>
 </body>
